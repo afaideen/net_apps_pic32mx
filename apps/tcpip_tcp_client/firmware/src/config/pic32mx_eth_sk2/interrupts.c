@@ -50,7 +50,9 @@
 // *****************************************************************************
 
 #include "configuration.h"
+#include "interrupts.h"
 #include "definitions.h"
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -60,20 +62,27 @@
 
 
 void CORE_TIMER_InterruptHandler( void );
-void UART_2_InterruptHandler( void );
+void DRV_USBFS_USB_Handler( void );
+void DRV_USBFS_USB_Handler( void );
 void ETHERNET_InterruptHandler( void );
 
 
 
 /* All the handlers are defined here.  Each will call its PLIB-specific function. */
+
 void __ISR(_CORE_TIMER_VECTOR, ipl1SOFT) CORE_TIMER_Handler (void)
 {
     CORE_TIMER_InterruptHandler();
 }
 
-void __ISR(_UART_2_VECTOR, ipl1SOFT) UART_2_Handler (void)
+void __ISR(_COMPARATOR_1_VECTOR, ipl1SOFT) COMPARATOR_1_Handler (void)
 {
-    UART_2_InterruptHandler();
+    DRV_USBFS_USB_Handler();
+}
+
+void __ISR(_USB_1_VECTOR, ipl1SOFT) USB_1_Handler (void)
+{
+    DRV_USBFS_USB_Handler();
 }
 
 void __ISR(_ETH_VECTOR, ipl5SRS) ETH_Handler (void)

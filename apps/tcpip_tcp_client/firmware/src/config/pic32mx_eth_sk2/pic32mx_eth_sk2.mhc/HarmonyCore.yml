@@ -33,9 +33,9 @@ children:
         - type: Pairs
           children:
           - type: Pair
-            attributes: {description: 'TRUE', value: '2', key: ENABLE_DRV_COMMON}
+            attributes: {description: 'TRUE', value: '1', key: ENABLE_DRV_COMMON}
           - type: Pair
-            attributes: {description: 'TRUE', value: '3', key: ENABLE_SYS_COMMON}
+            attributes: {description: 'TRUE', value: '1', key: ENABLE_SYS_COMMON}
           - type: Pair
             attributes: {description: 'FALSE', value: '0', key: ENABLE_SYS_MEDIA}
           - type: Pair
@@ -81,10 +81,16 @@ children:
   - type: Boolean
     attributes: {id: ENABLE_DRV_COMMON}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipStack, value: 'true'}
+        attributes: {id: drv_usbfs_v1, value: 'true'}
   - type: Boolean
     attributes: {id: ENABLE_OSAL}
     children:
@@ -102,13 +108,32 @@ children:
   - type: Boolean
     attributes: {id: ENABLE_SYS_COMMON}
     children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipStack, value: 'true'}
+        attributes: {id: drv_usbfs_v1, value: 'true'}
   - type: Boolean
     attributes: {id: ENABLE_SYS_INT}
     children:
+    - type: Values
+      children:
+      - type: Dynamic
+        attributes: {id: HarmonyCore, value: 'true'}
+  - type: Boolean
+    attributes: {id: ENABLE_SYS_RESET}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: readOnly}
+        children:
+        - {type: Value, value: 'true'}
     - type: Values
       children:
       - type: Dynamic
@@ -196,6 +221,33 @@ children:
         - {type: Value, value: 'true'}
   - type: File
     attributes: {id: OSAL_SYSDEF_H}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: RESET_DEF}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: RESET_HEADER}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'true'}
+  - type: File
+    attributes: {id: RESET_MAPPING}
     children:
     - type: Attributes
       children:

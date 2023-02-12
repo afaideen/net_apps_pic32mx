@@ -90,7 +90,11 @@ extern "C" {
 
 #define SYS_CONSOLE_INDEX_0                       0
 
+/* RX buffer size has one additional element for the empty spot needed in circular buffer */
+#define SYS_CONSOLE_USB_CDC_RD_BUFFER_SIZE_IDX0    129
 
+/* TX buffer size has one additional element for the empty spot needed in circular buffer */
+#define SYS_CONSOLE_USB_CDC_WR_BUFFER_SIZE_IDX0    257
 
 
 
@@ -108,10 +112,11 @@ extern "C" {
 
 
 #define SYS_CONSOLE_DEVICE_MAX_INSTANCES   			1
-#define SYS_CONSOLE_UART_MAX_INSTANCES 	   			1
-#define SYS_CONSOLE_USB_CDC_MAX_INSTANCES 	   		0
+#define SYS_CONSOLE_UART_MAX_INSTANCES 	   			0
+#define SYS_CONSOLE_USB_CDC_MAX_INSTANCES 	   		1
 #define SYS_CONSOLE_PRINT_BUFFER_SIZE        		200
 
+#define SYS_CONSOLE_USB_CDC_READ_WRITE_BUFFER_SIZE 	64
 
 
 
@@ -153,8 +158,7 @@ extern "C" {
 #define TCPIP_DNS_CLIENT_CACHE_PER_IPV6_ADDRESS		1
 #define TCPIP_DNS_CLIENT_ADDRESS_TYPE			    IP_ADDRESS_TYPE_IPV4
 #define TCPIP_DNS_CLIENT_CACHE_DEFAULT_TTL_VAL		1200
-#define TCPIP_DNS_CLIENT_CACHE_UNSOLVED_ENTRY_TMO	10
-#define TCPIP_DNS_CLIENT_LOOKUP_RETRY_TMO			5
+#define TCPIP_DNS_CLIENT_LOOKUP_RETRY_TMO			2
 #define TCPIP_DNS_CLIENT_MAX_HOSTNAME_LEN			64
 #define TCPIP_DNS_CLIENT_MAX_SELECT_INTERFACES		4
 #define TCPIP_DNS_CLIENT_DELETE_OLD_ENTRIES			true
@@ -165,13 +169,26 @@ extern "C" {
 
 /*** ICMPv4 Server Configuration ***/
 #define TCPIP_STACK_USE_ICMP_SERVER
-#define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    false
+#define TCPIP_ICMP_ECHO_ALLOW_BROADCASTS    true
 
 
 
 /*** NBNS Configuration ***/
 #define TCPIP_STACK_USE_NBNS
 #define TCPIP_NBNS_TASK_TICK_RATE   110
+
+
+/* Number of Endpoints used */
+#define DRV_USBFS_ENDPOINTS_NUMBER                        3
+
+/* The USB Device Layer will not initialize the USB Driver */
+#define USB_DEVICE_DRIVER_INITIALIZE_EXPLICIT
+
+/* Maximum device layer instances */
+#define USB_DEVICE_INSTANCES_NUMBER                         1
+
+/* EP0 size in bytes */
+#define USB_DEVICE_EP0_BUFFER_SIZE                          64
 
 
 /*** TCPIP MAC Configuration ***/
@@ -238,7 +255,24 @@ extern "C" {
 #define TCPIP_TCP_QUIET_TIME		        	    0
 #define TCPIP_TCP_COMMANDS   false
 #define TCPIP_TCP_EXTERN_PACKET_PROCESS   false
+#define TCPIP_TCP_DISABLE_CRYPTO_USAGE		        	    false
 
+
+
+#define TCPIP_STACK_USE_ZEROCONF_LINK_LOCAL
+#define TCPIP_ZC_LL_PROBE_WAIT 1
+#define TCPIP_ZC_LL_PROBE_MIN 1
+#define TCPIP_ZC_LL_PROBE_MAX 2
+#define TCPIP_ZC_LL_PROBE_NUM 3
+#define TCPIP_ZC_LL_ANNOUNCE_WAIT 2
+#define TCPIP_ZC_LL_ANNOUNCE_NUM 2
+#define TCPIP_ZC_LL_ANNOUNCE_INTERVAL 2
+#define TCPIP_ZC_LL_MAX_CONFLICTS 10
+#define TCPIP_ZC_LL_RATE_LIMIT_INTERVAL 60
+#define TCPIP_ZC_LL_DEFEND_INTERVAL 10
+#define TCPIP_ZC_LL_IPV4_LLBASE 0xa9fe0100
+#define TCPIP_ZC_LL_IPV4_LLBASE_MASK 0xffff
+#define TCPIP_ZC_LL_TASK_TICK_RATE 113
 
 
 /*** DHCP Configuration ***/
@@ -270,43 +304,55 @@ extern "C" {
 #define TCPIP_ARP_GRATUITOUS_PROBE_COUNT			1
 #define TCPIP_ARP_TASK_PROCESS_RATE		        	2000
 #define TCPIP_ARP_PRIMARY_CACHE_ONLY		        	true
-#define TCPIP_ARP_COMMANDS false
+#define TCPIP_ARP_COMMANDS true
 
 
 
 	/*** tcpip_cmd Configuration ***/
 	#define TCPIP_STACK_COMMAND_ENABLE
+		#define TCPIP_STACK_COMMANDS_STORAGE_ENABLE
 
 
 
 /* Network Configuration Index 0 */
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX0	"ETHMAC"
+//#define TCPIP_IF_PIC32MZW_ETHMAC	
 #define TCPIP_IF_ETHMAC
 
 #define TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX0				"MCHPBOARD_E"
-#define TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0				0
+#define TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0				"00:04:a3:aa:bb:cc"
 
 #define TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0			"192.168.100.10"
 #define TCPIP_NETWORK_DEFAULT_IP_MASK_IDX0			"255.255.255.0"
 #define TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0			"192.168.100.1"
 #define TCPIP_NETWORK_DEFAULT_DNS_IDX0				"192.168.100.1"
-#define TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX0			"0.0.0.0"
+#define TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX0			"192.168.1.12"
 #define TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX0			"full"
 #define TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX0			\
 													TCPIP_NETWORK_CONFIG_DHCP_CLIENT_ON |\
 													TCPIP_NETWORK_CONFIG_DNS_CLIENT_ON |\
+													TCPIP_NETWORK_CONFIG_MULTICAST_ON |\
 													TCPIP_NETWORK_CONFIG_IP_STATIC
 													
 #define TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX0			DRV_ETHMAC_PIC32MACObject
 
+
+/* Maximum instances of CDC function driver */
+#define USB_DEVICE_CDC_INSTANCES_NUMBER                     1
+
+
+/* CDC Transfer Queue Size for both read and
+   write. Applicable to all instances of the
+   function driver */
+#define USB_DEVICE_CDC_QUEUE_DEPTH_COMBINED                 3
 
 
 /*** telnet Configuration ***/
 #define TCPIP_STACK_USE_TELNET_SERVER
 #define TCPIP_TELNET_MAX_CONNECTIONS    2
 #define TCPIP_TELNET_TASK_TICK_RATE     100
-#define TCPIP_TELNET_SKT_TX_BUFF_SIZE   0
-#define TCPIP_TELNET_SKT_RX_BUFF_SIZE   0
+#define TCPIP_TELNET_SKT_TX_BUFF_SIZE   330
+#define TCPIP_TELNET_SKT_RX_BUFF_SIZE   330
 #define TCPIP_TELNET_LISTEN_PORT        23
 #define TCPIP_TELNET_PRINT_BUFF_SIZE    200
 #define TCPIP_TELNET_LINE_BUFF_SIZE     80
@@ -319,14 +365,52 @@ extern "C" {
 #define TCPIP_TELNET_PASSWORD           "Microchip"
 
 
+/*** USB Driver Configuration ***/
+
+/* Maximum USB driver instances */
+#define DRV_USBFS_INSTANCES_NUMBER                        1
+
+/* Interrupt mode enabled */
+#define DRV_USBFS_INTERRUPT_MODE                          true
+
+
+/* Enables Device Support */
+#define DRV_USBFS_DEVICE_SUPPORT                          true
+	
+/* Disable Host Support */
+#define DRV_USBFS_HOST_SUPPORT                            false
+
+
+
+/* Alignment for buffers that are submitted to USB Driver*/ 
+#define USB_ALIGN  CACHE_ALIGN
+
 
 /*** IPv4 Configuration ***/
 #define TCPIP_IPV4_ARP_SLOTS                        10
-#define TCPIP_IPV4_EXTERN_PACKET_PROCESS   false
+/*** IPv4 Fragmentation Configuration ***/
+#define TCPIP_IPV4_FRAGMENTATION		        	true
+#define TCPIP_IPV4_FRAGMENT_TIMEOUT		        	15
+#define TCPIP_IPV4_FRAGMENT_MAX_STREAMS		       	3
+#define TCPIP_IPV4_FRAGMENT_MAX_NUMBER		       	4
+#define TCPIP_IPV4_TASK_TICK_RATE		       	    37
+#define TCPIP_IPV4_EXTERN_PACKET_PROCESS   true
 
-#define TCPIP_IPV4_COMMANDS false
+#define TCPIP_IPV4_COMMANDS true
 
-#define TCPIP_IPV4_FORWARDING_ENABLE    false 
+#define TCPIP_IPV4_FORWARDING_ENABLE    true 
+
+#define TCPIP_IPV4_FWD_TX_SLOTS                        0
+#define TCPIP_IPV4_FORWARDING_TABLE_ASCII     true
+#define TCPIP_IPV4_FORWARDING_TABLE_BIN     true
+
+#define TCPIP_IPV4_FWD_FLAGS                        \
+                                                    TCPIP_IPV4_FWD_FLAG_ASCII_TABLE |\
+                                                    TCPIP_IPV4_FWD_FLAG_ENABLED
+
+#define TCPIP_IPV4_FORWARDING_TABLE_MAX_SIZE        10
+#define TCPIP_IPV4_FORWARDING_TABLE_ENTRIES         0
+
 
 
 
@@ -425,22 +509,6 @@ extern "C" {
 #define TCPIP_UDP_EXTERN_PACKET_PROCESS   false
 
 
-                                                  
-#define TCPIP_INTMAC_PHY_CONFIG_FLAGS              	( 0 \
-                                                    | DRV_ETHPHY_CFG_AUTO \
-                                                    )
-
-#define TCPIP_INTMAC_PHY_LINK_INIT_DELAY  			500
-#define TCPIP_INTMAC_PHY_ADDRESS		    			0
-#define DRV_ETHPHY_INSTANCES_NUMBER					1
-#define DRV_ETHPHY_CLIENTS_NUMBER					1
-#define DRV_ETHPHY_INDEX		        			1
-#define DRV_ETHPHY_PERIPHERAL_ID					1
-#define DRV_ETHPHY_NEG_INIT_TMO		    			1
-#define DRV_ETHPHY_NEG_DONE_TMO		    			2000
-#define DRV_ETHPHY_RESET_CLR_TMO					500
-
-
 
 /*** wolfCrypt Library Configuration ***/
 #define MICROCHIP_PIC32
@@ -456,9 +524,12 @@ extern "C" {
 #define HAVE_MCAPI
 #define WOLF_CRYPTO_CB  // provide call-back support
 #define WOLFCRYPT_ONLY
+#if (__XC32_VERSION > 100000000)
 #define WOLFSSL_HAVE_MIN
 #define WOLFSSL_HAVE_MAX
+#endif
 // ---------- FUNCTIONAL CONFIGURATION START ----------
+#define WOLFSSL_AES_SMALL_TABLES
 #define NO_MD4
 #define WOLFSSL_SHA224
 #define WOLFSSL_AES_128
@@ -469,6 +540,7 @@ extern "C" {
 #define HAVE_AES_ECB
 #define HAVE_AES_CBC
 #define WOLFSSL_AES_COUNTER
+#define WOLFSSL_AES_OFB
 #define HAVE_AESGCM
 #define HAVE_AESCCM
 #define NO_RC4
@@ -483,9 +555,27 @@ extern "C" {
 #define HAVE_HASHDRBG
 #define WC_NO_HARDEN
 #define SINGLE_THREADED
+#define NO_SIG_WRAPPER
 #define NO_ERROR_STRINGS
 #define NO_WOLFSSL_MEMORY
 // ---------- FUNCTIONAL CONFIGURATION END ----------
+
+
+#define TCPIP_INTMAC_PHY_CONFIG_FLAGS              	( 0 \
+                                                    | DRV_ETHPHY_CFG_RMII \
+                                                    | DRV_ETHPHY_CFG_AUTO \
+                                                    )
+													
+#define TCPIP_INTMAC_PHY_LINK_INIT_DELAY            500
+#define TCPIP_INTMAC_PHY_ADDRESS                    1
+#define DRV_ETHPHY_INSTANCES_NUMBER                 1
+#define DRV_ETHPHY_CLIENTS_NUMBER                   1
+#define DRV_ETHPHY_INDEX                            1
+#define DRV_ETHPHY_PERIPHERAL_ID                    1
+#define DRV_ETHPHY_NEG_INIT_TMO                     1
+#define DRV_ETHPHY_NEG_DONE_TMO                     2000
+#define DRV_ETHPHY_RESET_CLR_TMO                    500
+
 
 /* MPLAB Harmony Net Presentation Layer Definitions*/
 #define NET_PRES_NUM_INSTANCE 1

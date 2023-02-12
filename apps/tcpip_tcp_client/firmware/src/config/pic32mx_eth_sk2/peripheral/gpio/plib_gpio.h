@@ -62,6 +62,33 @@
 // *****************************************************************************
 
 
+/*** Macros for LED0 pin ***/
+#define LED0_Set()               (LATDSET = (1<<0))
+#define LED0_Clear()             (LATDCLR = (1<<0))
+#define LED0_Toggle()            (LATDINV= (1<<0))
+#define LED0_OutputEnable()      (TRISDCLR = (1<<0))
+#define LED0_InputEnable()       (TRISDSET = (1<<0))
+#define LED0_Get()               ((PORTD >> 0) & 0x1)
+#define LED0_PIN                  GPIO_PIN_RD0
+
+/*** Macros for LED1 pin ***/
+#define LED1_Set()               (LATDSET = (1<<1))
+#define LED1_Clear()             (LATDCLR = (1<<1))
+#define LED1_Toggle()            (LATDINV= (1<<1))
+#define LED1_OutputEnable()      (TRISDCLR = (1<<1))
+#define LED1_InputEnable()       (TRISDSET = (1<<1))
+#define LED1_Get()               ((PORTD >> 1) & 0x1)
+#define LED1_PIN                  GPIO_PIN_RD1
+
+/*** Macros for LED2 pin ***/
+#define LED2_Set()               (LATDSET = (1<<2))
+#define LED2_Clear()             (LATDCLR = (1<<2))
+#define LED2_Toggle()            (LATDINV= (1<<2))
+#define LED2_OutputEnable()      (TRISDCLR = (1<<2))
+#define LED2_InputEnable()       (TRISDSET = (1<<2))
+#define LED2_Get()               ((PORTD >> 2) & 0x1)
+#define LED2_PIN                  GPIO_PIN_RD2
+
 
 // *****************************************************************************
 /* GPIO Port

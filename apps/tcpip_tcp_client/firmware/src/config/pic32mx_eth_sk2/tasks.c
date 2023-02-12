@@ -72,6 +72,7 @@
 void SYS_Tasks ( void )
 {
     /* Maintain system services */
+    SYS_CONSOLE_Tasks(SYS_CONSOLE_INDEX_0);
     
 
 SYS_CMD_Tasks();
@@ -86,7 +87,11 @@ SYS_CMD_Tasks();
 
 
     /* Maintain Middleware & Other Libraries */
+    	/* USB Device layer tasks routine */ 
+    USB_DEVICE_Tasks(sysObj.usbDevObject0);
     
+
+
 TCPIP_STACK_Task(sysObj.tcpip);
 
 
@@ -99,6 +104,7 @@ NET_PRES_Tasks(sysObj.netPres);
     /* Maintain the application's state machine. */
         /* Call Application task APP. */
     APP_Tasks();
+    
 
 
 

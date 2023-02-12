@@ -84,9 +84,9 @@
 
 /*** DEVCFG3 ***/
 #pragma config FSRSSEL =    PRIORITY_5
-#pragma config FVBUSONIO =  OFF
+#pragma config FVBUSONIO =  ON
 #pragma config USERID =     0xffff
-#pragma config FUSBIDIO =   OFF
+#pragma config FUSBIDIO =   ON
 #pragma config FMIIEN =     OFF
 #pragma config FETHIO =     OFF
 #pragma config FCANIO =     OFF
@@ -122,6 +122,46 @@ SYSTEM_OBJECTS sysObj;
 // Section: Library/Stack Initialization Data
 // *****************************************************************************
 // *****************************************************************************
+/******************************************************
+ * USB Driver Initialization
+ ******************************************************/
+ 
+uint8_t __attribute__((aligned(512))) endPointTable1[DRV_USBFS_ENDPOINTS_NUMBER * 32];
+
+
+const DRV_USBFS_INIT drvUSBFSInit =
+{
+	 /* Assign the endpoint table */
+    .endpointTable= endPointTable1,
+
+
+	/* Interrupt Source for USB module */
+	.interruptSource = INT_SOURCE_USB,
+
+
+    
+    /* USB Controller to operate as USB Device */
+    .operationMode = DRV_USBFS_OPMODE_DEVICE,
+	
+	.operationSpeed = USB_SPEED_FULL,
+ 
+	/* Stop in idle */
+    .stopInIdle = false,
+	
+	    /* Suspend in sleep */
+    .suspendInSleep = false,
+ 
+    /* Identifies peripheral (PLIB-level) ID */
+    .usbID = USB_ID_1,
+	
+
+};
+
+
+
+
+
+
 
 // <editor-fold defaultstate="collapsed" desc="TCP/IP Stack Initialization Data">
 // *****************************************************************************
@@ -226,7 +266,7 @@ const DRV_ETHPHY_INIT tcpipPhyInitData =
     .ethphyId               = TCPIP_INTMAC_MODULE_ID,
     .phyAddress             = TCPIP_INTMAC_PHY_ADDRESS,
     .phyFlags               = TCPIP_INTMAC_PHY_CONFIG_FLAGS,
-    .pPhyObject             = &DRV_ETHPHY_OBJECT_SMSC_LAN8740,
+    .pPhyObject             = &DRV_ETHPHY_OBJECT_National_DP83848,
     .resetFunction          = 0,
     .pMiimObject            = &DRV_MIIM_OBJECT_BASE_Default,
     .pMiimInit              = &drvMiimInitData,
@@ -254,6 +294,11 @@ const TCPIP_MODULE_MAC_PIC32INT_CONFIG tcpipMACPIC32INTInitData =
 
 
 
+/*** Zeroconfig initialization data ***/
+const ZCLL_MODULE_CONFIG tcpipZCLLInitData =
+{
+    0
+};
 
 
 
@@ -276,10 +321,21 @@ const TCPIP_DNS_CLIENT_MODULE_CONFIG tcpipDNSClientInitData =
 
 /*** IPv4 Initialization Data ***/
 
+TCPIP_IPV4_FORWARD_ENTRY_ASCII tcpipIPv4AsciiForwardTbl[TCPIP_IPV4_FORWARDING_TABLE_ENTRIES] =
+{
+    // destination     mask    gateway   in interface   out interface   metric        
+};
 
 const TCPIP_IPV4_MODULE_CONFIG  tcpipIPv4InitData = 
 {
     .arpEntries = TCPIP_IPV4_ARP_SLOTS, 
+    // forwarding values
+    .forwardFlags = TCPIP_IPV4_FWD_FLAGS,
+    .forwardTxQueueSize = TCPIP_IPV4_FWD_TX_SLOTS,
+    .forwardTableMaxEntries = TCPIP_IPV4_FORWARDING_TABLE_MAX_SIZE,
+    .forwardTableSize = TCPIP_IPV4_FORWARDING_TABLE_ENTRIES,
+    .forwardTable = (const TCPIP_IPV4_FORWARD_ENTRY*)tcpipIPv4AsciiForwardTbl,
+
 };
 
 
@@ -303,17 +359,17 @@ const TCPIP_NETWORK_CONFIG __attribute__((unused))  TCPIP_HOSTS_CONFIGURATION[] 
 {
     /*** Network Configuration Index 0 ***/
     {
-        TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX0,       // interface
-        TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX0,            // hostName
-        TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0,             // macAddr
-        TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0,           // ipAddr
-        TCPIP_NETWORK_DEFAULT_IP_MASK_IDX0,              // ipMask
-        TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0,              // gateway
-        TCPIP_NETWORK_DEFAULT_DNS_IDX0,                  // priDNS
-        TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX0,           // secondDNS
-        TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX0,           // powerMode
-        TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX0,      // startFlags
-       &TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX0,           // pMacObject
+        .interface = TCPIP_NETWORK_DEFAULT_INTERFACE_NAME_IDX0,
+        .hostName = TCPIP_NETWORK_DEFAULT_HOST_NAME_IDX0,
+        .macAddr = TCPIP_NETWORK_DEFAULT_MAC_ADDR_IDX0,
+        .ipAddr = TCPIP_NETWORK_DEFAULT_IP_ADDRESS_IDX0,
+        .ipMask = TCPIP_NETWORK_DEFAULT_IP_MASK_IDX0,
+        .gateway = TCPIP_NETWORK_DEFAULT_GATEWAY_IDX0,
+        .priDNS = TCPIP_NETWORK_DEFAULT_DNS_IDX0,
+        .secondDNS = TCPIP_NETWORK_DEFAULT_SECOND_DNS_IDX0,
+        .powerMode = TCPIP_NETWORK_DEFAULT_POWER_MODE_IDX0,
+        .startFlags = TCPIP_NETWORK_DEFAULT_INTERFACE_FLAGS_IDX0,
+        .pMacObject = &TCPIP_NETWORK_DEFAULT_MAC_DRIVER_IDX0,
     },
 };
 
@@ -335,6 +391,7 @@ const TCPIP_STACK_MODULE_CONFIG TCPIP_STACK_MODULE_CONFIG_TBL [] =
     {TCPIP_MODULE_SNTP,             &tcpipSNTPInitData},            // TCPIP_MODULE_SNTP
 
     {TCPIP_MODULE_TELNET_SERVER,    &tcpipTelnetInitData},          // TCPIP_MODULE_TELNET_SERVER
+    {TCPIP_MODULE_ZCLL,             0},                             // TCPIP_MODULE_ZCLL,
     { TCPIP_MODULE_MANAGER,         &tcpipHeapConfig },             // TCPIP_MODULE_MANAGER
 
 // MAC modules
@@ -532,31 +589,34 @@ const SYS_TIME_INIT sysTimeInitData =
 // <editor-fold defaultstate="collapsed" desc="SYS_CONSOLE Instance 0 Initialization Data">
 
 
-/* Declared in console device implementation (sys_console_uart.c) */
-extern const SYS_CONSOLE_DEV_DESC sysConsoleUARTDevDesc;
+/* These buffers are passed to the USB CDC Function Driver */
+static uint8_t CACHE_ALIGN sysConsole0USBCdcRdBuffer[SYS_CONSOLE_USB_CDC_READ_WRITE_BUFFER_SIZE];
+static uint8_t CACHE_ALIGN sysConsole0USBCdcWrBuffer[SYS_CONSOLE_USB_CDC_READ_WRITE_BUFFER_SIZE];
 
-const SYS_CONSOLE_UART_PLIB_INTERFACE sysConsole0UARTPlibAPI =
-{
-    .read = (SYS_CONSOLE_UART_PLIB_READ)UART2_Read,
-	.readCountGet = (SYS_CONSOLE_UART_PLIB_READ_COUNT_GET)UART2_ReadCountGet,
-	.readFreeBufferCountGet = (SYS_CONSOLE_UART_PLIB_READ_FREE_BUFFFER_COUNT_GET)UART2_ReadFreeBufferCountGet,
-    .write = (SYS_CONSOLE_UART_PLIB_WRITE)UART2_Write,
-	.writeCountGet = (SYS_CONSOLE_UART_PLIB_WRITE_COUNT_GET)UART2_WriteCountGet,
-	.writeFreeBufferCountGet = (SYS_CONSOLE_UART_PLIB_WRITE_FREE_BUFFER_COUNT_GET)UART2_WriteFreeBufferCountGet,
-};
+/* These are the USB CDC Ring Buffers. Data received from USB layer are copied to these ring buffer. */
+static uint8_t sysConsole0USBCdcRdRingBuffer[SYS_CONSOLE_USB_CDC_RD_BUFFER_SIZE_IDX0];
+static uint8_t sysConsole0USBCdcWrRingBuffer[SYS_CONSOLE_USB_CDC_WR_BUFFER_SIZE_IDX0];
 
-const SYS_CONSOLE_UART_INIT_DATA sysConsole0UARTInitData =
+/* Declared in console device implementation (sys_console_usb_cdc.c) */
+extern const SYS_CONSOLE_DEV_DESC sysConsoleUSBCdcDevDesc;
+
+const SYS_CONSOLE_USB_CDC_INIT_DATA sysConsole0USBCdcInitData =
 {
-    .uartPLIB = &sysConsole0UARTPlibAPI,    
+	.cdcInstanceIndex			= 0,
+	.cdcReadBuffer				= sysConsole0USBCdcRdBuffer,
+	.cdcWriteBuffer				= sysConsole0USBCdcWrBuffer,
+    .consoleReadBuffer 			= sysConsole0USBCdcRdRingBuffer,
+    .consoleWriteBuffer 		= sysConsole0USBCdcWrRingBuffer,
+    .consoleReadBufferSize 		= SYS_CONSOLE_USB_CDC_RD_BUFFER_SIZE_IDX0,
+    .consoleWriteBufferSize 	= SYS_CONSOLE_USB_CDC_WR_BUFFER_SIZE_IDX0,
 };
 
 const SYS_CONSOLE_INIT sysConsole0Init =
 {
-    .deviceInitData = (const void*)&sysConsole0UARTInitData,
-    .consDevDesc = &sysConsoleUARTDevDesc,
+    .deviceInitData = (const void*)&sysConsole0USBCdcInitData,
+    .consDevDesc = &sysConsoleUSBCdcDevDesc,
     .deviceIndex = 0,
 };
-
 
 
 // </editor-fold>
@@ -618,16 +678,13 @@ void SYS_Initialize ( void* data )
     /* Set the SRAM wait states to zero */
     BMXCONbits.BMXWSDRM = 0;
 
-    /* Configure Debug Data Port */
-    DDPCONbits.JTAGEN = 0;
 
 
 
 	GPIO_Initialize();
 
+	BSP_Initialize();
     CORETIMER_Initialize();
-	UART2_Initialize();
-
 
 
     /* Initialize the MIIM Driver */
@@ -644,6 +701,15 @@ void SYS_Initialize ( void* data )
 
 
 
+	 /* Initialize the USB device layer */
+    sysObj.usbDevObject0 = USB_DEVICE_Initialize (USB_DEVICE_INDEX_0 , ( SYS_MODULE_INIT* ) & usbDevInitData);
+	
+	
+
+	/* Initialize USB Driver */ 
+    sysObj.drvUSBFSObject = DRV_USBFS_Initialize(DRV_USBFS_INDEX_0, (SYS_MODULE_INIT *) &drvUSBFSInit);	
+
+
 	/* Network Presentation Layer Initialization */
 	sysObj.netPres = NET_PRES_Initialize(0, (SYS_MODULE_INIT*)&netPresInitData);
     /* TCPIP Stack Initialization */
@@ -654,7 +720,6 @@ void SYS_Initialize ( void* data )
     CRYPT_WCCB_Initialize();
 
     APP_Initialize();
-
 
     EVIC_Initialize();
 

@@ -4,13 +4,34 @@ attributes: {id: tcpipStack}
 children:
 - type: Symbols
   children:
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_ALIAS_INTERFACE_SUPPORT}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_ENABLE_INIT_CALLBACK}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
+  - type: Boolean
+    attributes: {id: TCPIP_STACK_EXTERN_PACKET_PROCESS}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'false'}
   - type: Integer
     attributes: {id: TCPIP_STACK_HEAP_SIZE_RECOMMEND}
     children:
     - type: Values
       children:
       - type: Dynamic
-        attributes: {id: tcpipStack, value: '35'}
+        attributes: {id: tcpipStack, value: '34'}
   - type: Boolean
     attributes: {id: TCPIP_STACK_INTERFACE_CHANGE_SIGNALING}
     children:
@@ -27,5 +48,14 @@ children:
       children:
       - type: Dynamic
         attributes: {id: tcpipStack, value: 'true'}
+  - type: File
+    attributes: {id: TCPIP_SYS_RTOS_TASK}
+    children:
+    - type: Attributes
+      children:
+      - type: Boolean
+        attributes: {id: enabled}
+        children:
+        - {type: Value, value: 'false'}
 - type: ElementPosition
-  attributes: {x: '240', y: '20', id: tcpipStack}
+  attributes: {x: '237', y: '95', id: tcpipStack}

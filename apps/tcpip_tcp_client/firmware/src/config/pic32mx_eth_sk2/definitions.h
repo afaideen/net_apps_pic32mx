@@ -49,15 +49,21 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "crypto/crypto.h"
+#include "bsp/bsp.h"
+#include "usb/usb_chapter_9.h"
+#include "usb/usb_device.h"
 #include "system/time/sys_time.h"
+#include "usb/usb_device_cdc.h"
+#include "usb/usb_cdc.h"
 #include "peripheral/coretimer/plib_coretimer.h"
-#include "peripheral/uart/plib_uart2.h"
+#include "driver/usb/usbfs/drv_usbfs.h"
 #include "library/tcpip/tcpip.h"
 #include "driver/ethmac/drv_ethmac.h"
 #include "driver/miim/drv_miim.h"
 #include "system/sys_time_h2_adapter.h"
 #include "system/sys_random_h2_adapter.h"
 #include "system/int/sys_int.h"
+#include "system/reset/sys_reset.h"
 #include "osal/osal.h"
 #include "system/debug/sys_debug.h"
 #include "system/command/sys_command.h"
@@ -70,7 +76,7 @@
 #include "net_pres/pres/net_pres_transportapi.h"
 #include "net_pres/pres/net_pres_socketapi.h"
 #include "system/console/sys_console.h"
-#include "system/console/src/sys_console_uart_definitions.h"
+#include "system/console/src/sys_console_usb_cdc_definitions.h"
 #include "app.h"
 
 
@@ -82,6 +88,9 @@ extern "C" {
 
 #endif
 // DOM-IGNORE-END
+
+/* CPU clock frequency */
+#define CPU_CLOCK_FREQUENCY 80000000
 
 // *****************************************************************************
 // *****************************************************************************
@@ -175,25 +184,29 @@ void SYS_Tasks ( void );
 // Section: Type Definitions
 // *****************************************************************************
 // *****************************************************************************
-    
+
 // *****************************************************************************
 /* System Objects
-        
+
 Summary:
     Structure holding the system's object handles
-        
+
 Description:
     This structure contains the object handles for all objects in the
     MPLAB Harmony project's system configuration.
-        
+
 Remarks:
     These handles are returned from the "Initialize" functions for each module
     and must be passed into the "Tasks" function for each module.
 */
-        
+
 typedef struct
 {
+	SYS_MODULE_OBJ  usbDevObject0;
+
     SYS_MODULE_OBJ  sysTime;
+	SYS_MODULE_OBJ  drvUSBFSObject;
+
     SYS_MODULE_OBJ  sysConsole0;
 
 
@@ -212,6 +225,8 @@ typedef struct
 // Section: extern declarations
 // *****************************************************************************
 // *****************************************************************************
+
+extern const USB_DEVICE_INIT usbDevInitData; 
 
 
 

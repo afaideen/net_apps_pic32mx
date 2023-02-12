@@ -26,4 +26,4 @@ children:
       - type: Dynamic
         attributes: {id: tcpip_apps_config, value: 'true'}
 - type: ElementPosition
-  attributes: {x: '20', y: '20', id: tcpip_network_config}
+  attributes: {x: '20', y: '18', id: tcpip_network_config}

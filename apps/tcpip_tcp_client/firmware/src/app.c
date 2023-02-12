@@ -52,7 +52,13 @@
 
 #include "app.h"
 #include "app_commands.h"
+#include "bsp/bsp.h"
+//#include "peripheral/gpio/plib_gpio.h"
+//#include "app_commands.h"
 
+bool APP_Commands_Init();
+void APP_CLIENT_Initialize ( void );
+void APP_CLIENT_Tasks ( void );
 // *****************************************************************************
 // *****************************************************************************
 // Section: Global Data Definitions
@@ -118,6 +124,8 @@ void APP_Initialize ( void )
     appData.state = APP_STATE_INIT;
     
     APP_Commands_Init();
+    
+    APP_CLIENT_Initialize();
 }
 
 
@@ -137,6 +145,25 @@ void APP_Tasks ( void )
     IPV4_ADDR           ipAddr;
     TCPIP_NET_HANDLE    netH;
     int                 i, nNets;
+    static uint32_t     startTick = 0;
+    
+    if(SYS_TMR_TickCountGet() - startTick >= SYS_TMR_TickCounterFrequencyGet()/2ul)
+    {
+                startTick = SYS_TMR_TickCountGet();
+//                BSP_LEDToggle(0);
+//                LED0_Toggle();
+                LED1_Toggle();
+                
+    }
+    
+    netH = TCPIP_STACK_IndexToNet(0);
+    if(TCPIP_STACK_NetIsReady(netH))
+    {
+        if(TCPIP_DHCP_IsBound(netH))
+        {
+            APP_CLIENT_Tasks();
+        }
+    }
 
     /* Check the application's current state. */
     switch ( appData.state )
@@ -196,6 +223,7 @@ void APP_Tasks ( void )
                 if(dwLastIP[i].Val != ipAddr.Val)
                 {
                     dwLastIP[i].Val = ipAddr.Val;
+//                    LED0_Set();
 
                     SYS_CONSOLE_MESSAGE(TCPIP_STACK_NetNameGet(netH));
                     SYS_CONSOLE_MESSAGE(" IP Address: ");
