@@ -67,10 +67,10 @@
 #pragma config FNOSC =      PRIPLL
 #pragma config FPBDIV =     DIV_1
 #pragma config FSOSCEN =    ON
-#pragma config IESO =       ON
+#pragma config IESO =       OFF
 #pragma config POSCMOD =    XT
 #pragma config OSCIOFNC =   OFF
-#pragma config FCKSM =      CSECME
+#pragma config FCKSM =      CSDCMD
 #pragma config WDTPS =      PS1048576
 #pragma config FWDTEN =     OFF
 

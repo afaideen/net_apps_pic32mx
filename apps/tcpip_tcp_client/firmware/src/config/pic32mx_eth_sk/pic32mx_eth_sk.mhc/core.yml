@@ -222,7 +222,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: CSECME}
+        attributes: {value: CSDCMD}
   - type: Combo
     attributes: {id: CONFIG_FETHIO}
     children:
@@ -239,6 +239,8 @@ children:
       children:
       - type: Dynamic
         attributes: {id: drvPic32mEthmac, value: 'OFF'}
+      - type: User
+        attributes: {value: 'OFF'}
   - type: Combo
     attributes: {id: CONFIG_FNOSC}
     children:
@@ -274,6 +276,13 @@ children:
       children:
       - type: User
         attributes: {value: 'ON'}
+  - type: Combo
+    attributes: {id: CONFIG_IESO}
+    children:
+    - type: Values
+      children:
+      - type: User
+        attributes: {value: 'OFF'}
   - type: Combo
     attributes: {id: CONFIG_POSCMOD}
     children:
