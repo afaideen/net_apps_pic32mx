@@ -150,7 +150,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: SWITCH_AL_RD6}
+        attributes: {value: SWITCH1}
   - type: String
     attributes: {id: BSP_PIN_83_FUNCTION_TYPE}
     children:
@@ -164,7 +164,7 @@ children:
     - type: Values
       children:
       - type: User
-        attributes: {value: SWITCH_AL_RD7}
+        attributes: {value: SWITCH2}
   - type: String
     attributes: {id: BSP_PIN_84_FUNCTION_TYPE}
     children:

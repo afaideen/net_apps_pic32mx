@@ -90,6 +90,8 @@ SYS_CMD_Tasks();
     	/* USB Device layer tasks routine */ 
     USB_DEVICE_Tasks(sysObj.usbDevObject0);
     
+    /* USB FS Driver Task Routine */ 
+    DRV_USBFS_Tasks(sysObj.drvUSBFSObject);
 
 
 TCPIP_STACK_Task(sysObj.tcpip);

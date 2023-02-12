@@ -27,4 +27,4 @@ children:
         children:
         - {type: Value, value: libdrvExtPhyDp83848}
 - type: ElementPosition
-  attributes: {x: '426', y: '88', id: drvPic32mEthmac}
+  attributes: {x: '433', y: '115', id: drvPic32mEthmac}

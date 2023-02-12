@@ -57,7 +57,7 @@
 */
 void GPIO_Initialize ( void )
 {
-    AD1PCFGSET = 0x3800; /* Digital Mode Enable */
+    AD1PCFGSET = 0x820; /* Digital Mode Enable */
 
     /* PORTA Initialization */
 

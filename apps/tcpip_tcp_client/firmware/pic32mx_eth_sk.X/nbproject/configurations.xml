@@ -251,6 +251,8 @@
                 <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/src/lldp_tlv.h</itemPath>
                 <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/src/tcpip_mac_bridge_manager.h</itemPath>
                 <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/src/tcpip_mac_bridge_private.h</itemPath>
+                <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/src/dhcp_server_manager.h</itemPath>
+                <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/src/dhcp_server_private.h</itemPath>
               </logicalFolder>
               <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/tcpip_common_ports.h</itemPath>
               <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/tcpip_mac.h</itemPath>
@@ -297,6 +299,7 @@
               <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/tcpip.h</itemPath>
               <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/tcpip_mac_bridge.h</itemPath>
               <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/tcpip_ethernet.h</itemPath>
+              <itemPath>../src/config/pic32mx_eth_sk/library/tcpip/dhcp_server.h</itemPath>
             </logicalFolder>
           </logicalFolder>
           <logicalFolder name="f5" displayName="net_pres" projectFiles="true">

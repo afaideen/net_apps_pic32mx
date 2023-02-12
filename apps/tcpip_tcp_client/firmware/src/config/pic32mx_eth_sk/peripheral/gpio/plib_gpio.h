@@ -62,14 +62,6 @@
 // *****************************************************************************
 
 
-/*** Macros for SWITCH1 pin ***/
-#define SWITCH1_Get()               ((PORTD >> 6) & 0x1)
-#define SWITCH1_PIN                  GPIO_PIN_RD6
-
-/*** Macros for SWITCH2 pin ***/
-#define SWITCH2_Get()               ((PORTD >> 7) & 0x1)
-#define SWITCH2_PIN                  GPIO_PIN_RD7
-
 
 // *****************************************************************************
 /* GPIO Port
